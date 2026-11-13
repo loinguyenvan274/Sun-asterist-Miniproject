@@ -20,3 +20,4 @@ public interface EmployeeService {
 
     List<DepartmentStatDTO> getDepartmentStatistics();
 }
+

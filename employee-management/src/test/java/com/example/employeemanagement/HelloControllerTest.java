@@ -33,3 +33,4 @@ class HelloControllerTest {
                 .andExpect(jsonPath("$.data").value("Hello World"));
     }
 }
+

@@ -72,3 +72,4 @@ public class EmployeeController {
         return ResponseEntity.ok(ApiResponse.success("Department statistics retrieved successfully", stats));
     }
 }
+

@@ -29,3 +29,4 @@ public class DepartmentStatDTO {
         this.count = count;
     }
 }
+
