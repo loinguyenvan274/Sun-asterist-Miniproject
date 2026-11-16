@@ -4,10 +4,12 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 
 public class EmployeeRequestDTO {
 
     @NotBlank(message = "Full name cannot be blank")
+    @Size(min = 2, max = 100, message = "Full name must be between 2 and 100 characters")
     private String fullName;
 
     @NotBlank(message = "Email cannot be blank")
@@ -43,6 +45,14 @@ public class EmployeeRequestDTO {
         this.fullName = fullName;
     }
 
+    public String getName() {
+        return fullName;
+    }
+
+    public void setName(String name) {
+        this.fullName = name;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -75,4 +85,3 @@ public class EmployeeRequestDTO {
         this.salary = salary;
     }
 }
-

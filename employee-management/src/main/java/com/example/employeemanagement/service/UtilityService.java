@@ -4,13 +4,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.Locale;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Service
 public class UtilityService {
 
-    private final AtomicInteger sequence = new AtomicInteger(1000);
+    private final AtomicLong sequence = new AtomicLong(System.currentTimeMillis() % 1000000);
 
     public String normalizeName(String name) {
         if (name == null || name.isBlank()) {
@@ -30,8 +30,7 @@ public class UtilityService {
     }
 
     public String generateEmployeeCode() {
-        int nextId = sequence.incrementAndGet();
+        long nextId = sequence.incrementAndGet();
         return "EMP" + nextId;
     }
 }
-

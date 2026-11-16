@@ -3,6 +3,7 @@ package com.example.employeemanagement.service;
 import com.example.employeemanagement.dto.DepartmentStatDTO;
 import com.example.employeemanagement.dto.EmployeeRequestDTO;
 import com.example.employeemanagement.dto.EmployeeResponseDTO;
+import com.example.employeemanagement.model.Department;
 
 import java.util.List;
 
@@ -19,5 +20,6 @@ public interface EmployeeService {
     void deleteEmployee(Long id);
 
     List<DepartmentStatDTO> getDepartmentStatistics();
-}
 
+    List<Department> getAllDepartments();
+}

@@ -47,6 +47,14 @@ public class EmployeeResponseDTO {
         this.fullName = fullName;
     }
 
+    public String getName() {
+        return fullName;
+    }
+
+    public void setName(String name) {
+        this.fullName = name;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -79,4 +87,3 @@ public class EmployeeResponseDTO {
         this.salary = salary;
     }
 }
-

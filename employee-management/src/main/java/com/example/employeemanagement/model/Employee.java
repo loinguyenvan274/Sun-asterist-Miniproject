@@ -1,28 +1,53 @@
 package com.example.employeemanagement.model;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+
 import java.util.Objects;
 
+@Entity
+@Table(name = "employee")
 public class Employee {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(unique = true)
     private String employeeCode;
-    private String fullName;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false, unique = true)
     private String email;
-    private String department;
+
     private String position;
+
     private Double salary;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "department_id")
+    private Department department;
 
     public Employee() {
     }
 
-    public Employee(Long id, String employeeCode, String fullName, String email, String department, String position, Double salary) {
+    public Employee(Long id, String employeeCode, String name, String email, String position, Double salary, Department department) {
         this.id = id;
         this.employeeCode = employeeCode;
-        this.fullName = fullName;
+        this.name = name;
         this.email = email;
-        this.department = department;
         this.position = position;
         this.salary = salary;
+        this.department = department;
     }
 
     public Long getId() {
@@ -41,12 +66,20 @@ public class Employee {
         this.employeeCode = employeeCode;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getFullName() {
-        return fullName;
+        return name;
     }
 
     public void setFullName(String fullName) {
-        this.fullName = fullName;
+        this.name = fullName;
     }
 
     public String getEmail() {
@@ -55,14 +88,6 @@ public class Employee {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(String department) {
-        this.department = department;
     }
 
     public String getPosition() {
@@ -79,6 +104,14 @@ public class Employee {
 
     public void setSalary(Double salary) {
         this.salary = salary;
+    }
+
+    public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
     }
 
     @Override
@@ -99,12 +132,11 @@ public class Employee {
         return "Employee{" +
                 "id=" + id +
                 ", employeeCode='" + employeeCode + '\'' +
-                ", fullName='" + fullName + '\'' +
+                ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
-                ", department='" + department + '\'' +
                 ", position='" + position + '\'' +
                 ", salary=" + salary +
+                ", department=" + (department != null ? department.getName() : null) +
                 '}';
     }
 }
-
