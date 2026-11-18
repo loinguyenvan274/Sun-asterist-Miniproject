@@ -1,11 +1,14 @@
 package com.example.employeemanagement.controller;
 
+import com.example.employeemanagement.dto.DepartmentStatDTO;
 import com.example.employeemanagement.dto.EmployeeRequestDTO;
 import com.example.employeemanagement.dto.EmployeeResponseDTO;
+import com.example.employeemanagement.dto.SalaryAnalyticsDTO;
 import com.example.employeemanagement.exception.DuplicateResourceException;
 import com.example.employeemanagement.service.EmployeeService;
 import jakarta.validation.Valid;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -56,6 +59,7 @@ public class EmployeeWebController {
     }
 
     @GetMapping("/add")
+    @PreAuthorize("hasRole('ADMIN')")
     public String showAddForm(Model model) {
         model.addAttribute("employee", new EmployeeRequestDTO());
         model.addAttribute("departments", employeeService.getAllDepartments());
@@ -63,6 +67,7 @@ public class EmployeeWebController {
     }
 
     @PostMapping("/add")
+    @PreAuthorize("hasRole('ADMIN')")
     public String addEmployee(
             @Valid @ModelAttribute("employee") EmployeeRequestDTO request,
             BindingResult bindingResult,
@@ -85,9 +90,22 @@ public class EmployeeWebController {
     }
 
     @GetMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public String deleteEmployee(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         employeeService.deleteEmployee(id);
         redirectAttributes.addFlashAttribute("successMessage", "Employee deleted successfully!");
         return "redirect:/employees/list";
+    }
+
+    @GetMapping("/statistics")
+    public String showStatistics(Model model) {
+        long totalEmployees = employeeService.countTotalEmployees();
+        List<DepartmentStatDTO> departmentStats = employeeService.getDepartmentStatistics();
+        List<SalaryAnalyticsDTO> salaryAnalytics = employeeService.getSalaryAnalytics();
+
+        model.addAttribute("totalEmployees", totalEmployees);
+        model.addAttribute("departmentStats", departmentStats);
+        model.addAttribute("salaryAnalytics", salaryAnalytics);
+        return "statistics";
     }
 }

@@ -3,6 +3,8 @@ package com.example.employeemanagement.service;
 import com.example.employeemanagement.dto.DepartmentStatDTO;
 import com.example.employeemanagement.dto.EmployeeRequestDTO;
 import com.example.employeemanagement.dto.EmployeeResponseDTO;
+import com.example.employeemanagement.dto.ReportSummaryDTO;
+import com.example.employeemanagement.dto.SalaryAnalyticsDTO;
 import com.example.employeemanagement.exception.DuplicateResourceException;
 import com.example.employeemanagement.exception.ResourceNotFoundException;
 import com.example.employeemanagement.model.Department;
@@ -12,12 +14,12 @@ import com.example.employeemanagement.repository.EmployeeRepository;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -71,6 +73,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @CacheEvict(value = "employeeCount", allEntries = true)
     public EmployeeResponseDTO createEmployee(EmployeeRequestDTO request) {
         logger.info("Creating new employee: name={}, email={}, department={}",
                 request.getFullName(), request.getEmail(), request.getDepartment());
@@ -98,6 +101,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @CacheEvict(value = "employeeCount", allEntries = true)
     public EmployeeResponseDTO updateEmployee(Long id, EmployeeRequestDTO request) {
         logger.info("Updating employee with id: {}", id);
 
@@ -128,6 +132,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    @CacheEvict(value = "employeeCount", allEntries = true)
     public void deleteEmployee(Long id) {
         logger.info("Deleting employee with id: {}", id);
         Employee existing = employeeRepository.findById(id)
@@ -142,17 +147,34 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     @Transactional(readOnly = true)
     public List<DepartmentStatDTO> getDepartmentStatistics() {
-        logger.debug("Fetching department statistics");
-        List<Employee> employees = employeeRepository.findAll();
-        Map<String, Long> statMap = employees.stream()
-                .collect(Collectors.groupingBy(
-                        emp -> emp.getDepartment() != null ? emp.getDepartment().getName() : "UNASSIGNED",
-                        Collectors.counting()
-                ));
+        logger.debug("Fetching department statistics using repository query");
+        return employeeRepository.countEmployeesByDepartment();
+    }
 
-        return statMap.entrySet().stream()
-                .map(entry -> new DepartmentStatDTO(entry.getKey(), entry.getValue()))
-                .toList();
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable(value = "employeeCount")
+    public long countTotalEmployees() {
+        logger.debug("Counting total employees from database (cacheable)");
+        return employeeRepository.countTotalEmployees();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SalaryAnalyticsDTO> getSalaryAnalytics() {
+        logger.debug("Fetching salary analytics by department");
+        return employeeRepository.getSalaryAnalyticsByDepartment();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ReportSummaryDTO getReportSummary() {
+        logger.debug("Generating report summary");
+        long totalEmp = countTotalEmployees();
+        long totalDept = departmentRepository.count();
+        List<DepartmentStatDTO> deptStats = getDepartmentStatistics();
+        List<SalaryAnalyticsDTO> salaryStats = getSalaryAnalytics();
+        return new ReportSummaryDTO(totalEmp, totalDept, deptStats, salaryStats);
     }
 
     @Override

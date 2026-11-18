@@ -9,9 +9,16 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm mb-4">
     <div class="container">
         <a class="navbar-brand fw-bold" th:href="@{/employees/list}">Employee Management</a>
-        <div class="navbar-nav">
+        <div class="navbar-nav me-auto">
             <a class="nav-link" th:href="@{/employees/list}">Employees</a>
             <a class="nav-link active" th:href="@{/employees/add}">Add Employee</a>
+            <a class="nav-link" th:href="@{/employees/statistics}">Statistics</a>
+        </div>
+        <div class="navbar-nav">
+            <a class="nav-link" th:href="@{/login}">Login</a>
+            <form th:action="@{/logout}" method="post" class="d-inline">
+                <button type="submit" class="btn btn-outline-light btn-sm ms-2">Logout</button>
+            </form>
         </div>
     </div>
 </nav>

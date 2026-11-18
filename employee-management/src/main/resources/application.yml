@@ -3,3 +3,18 @@ spring:
     name: employee-management
   profiles:
     active: dev
+  cache:
+    type: caffeine
+    caffeine:
+      spec: expireAfterWrite=60s
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,info
+
+app:
+  jwt:
+    secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+    expiration-ms: 86400000
